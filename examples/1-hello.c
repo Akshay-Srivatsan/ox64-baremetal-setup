@@ -3,6 +3,7 @@
 void kmain(void) {
   uart_init(115200);
   while (true) {
-    uart_puts("Hello, RISC-V!\n");
+    uart_puts("Hello, RISC-V! \n");
+    delay_ms(1000);
   }
 }
