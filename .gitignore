@@ -1,0 +1,6 @@
+*.d
+__pycache__
+*.bin
+*.txt
+ox-flash
+boot-header.h
