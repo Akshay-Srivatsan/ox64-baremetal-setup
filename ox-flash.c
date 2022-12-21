@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
                                           (length >> 8) & 0xff};
     write_exact(port, load_segment_data, sizeof(load_segment_data));
     write_exact(port, &image[offset], length);
-    usleep(30000);
+    usleep(100000);
     check_ok(port);
   }
   printf("\n");

@@ -26,5 +26,5 @@ PUT32:
 get32:
 GET32:
   fence rw,rw
-  lw a1, 0(a0)
+  lw a0, 0(a0)
   ret
