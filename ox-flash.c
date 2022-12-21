@@ -111,6 +111,7 @@ int main(int argc, char **argv) {
   check_ok(port);
   printf("\n");
 
+  // Send segment header
   printf("Sending segment header.\n");
   printf("Segment Address: 0x%x\n", segment_header.destaddr);
   printf("Segment Length: %d\n", segment_header.len);
@@ -139,6 +140,7 @@ int main(int argc, char **argv) {
   printf("OK\n");
   printf("\n");
 
+  // Send data, packetized to keep each packet under 4096 bytes.
   size_t bytes_per_packet = 4096 - 4;
   size_t packets = (size + bytes_per_packet - 1) / bytes_per_packet;
   printf("Going to send %lu bytes (%lu packet%s).\n", size, packets,

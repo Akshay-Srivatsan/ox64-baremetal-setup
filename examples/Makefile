@@ -2,7 +2,7 @@ START=start.o cstart.o
 TESTS=$(wildcard [0-9]*.c)
 MEMMAP=memmap.ld
 
-RV=riscv32-unknown-elf
+RV=riscv64-unknown-elf
 CC=$(RV)-gcc
 AS=$(RV)-as
 LD=$(RV)-ld
