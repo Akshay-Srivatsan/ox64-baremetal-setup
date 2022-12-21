@@ -3,13 +3,20 @@ SRC=$(wildcard *.c)
 CFLAGS += -Werror -Wall -Wno-packed-bitfield-compat -lz -lssl -lcrypto
 
 .PHONY: all
-all: ox-flash
+all: ox-flash examples
+
+.PHONY: examples
+examples:
+	$(MAKE) -C examples
 
 .PHONY: clean
 clean:
 	rm -f ox-flash *.d boot-header.h
+	$(MAKE) -C examples clean
 
-include $(wildcard *.d)
+ifneq ($(MAKECMDGOALS),clean)
+	include $(wildcard *.d)
+endif
 
 boot-header.h: dump-struct.py $(wildcard *.py)
 	./$< > $@

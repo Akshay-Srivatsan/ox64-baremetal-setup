@@ -154,6 +154,7 @@ int main(int argc, char **argv) {
                                           (length >> 8) & 0xff};
     write_exact(port, load_segment_data, sizeof(load_segment_data));
     write_exact(port, &image[offset], length);
+    usleep(30000);
     check_ok(port);
   }
   printf("\n");
@@ -182,7 +183,12 @@ int main(int argc, char **argv) {
 
   while (true) {
     char c;
-    read(port, &c, 1);
-    write(STDOUT_FILENO, &c, 1);
+    int x = read(port, &c, 1);
+    if (x == 1) {
+      write(STDOUT_FILENO, &c, 1);
+    }
+    if (x < 1) {
+      exit(EXIT_SUCCESS);
+    }
   }
 }
