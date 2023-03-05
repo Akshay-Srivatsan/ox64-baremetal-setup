@@ -1,5 +1,9 @@
-SHARED=start.o cstart.o uart.o
-TESTS=$(wildcard [0-9]*.c)
+SRC = $(wildcard src/*.c)
+ASM = $(wildcard src/*.S)
+SHARED = $(patsubst src/%.c,obj/%.o,$(SRC)) $(patsubst src/%.S,obj/%.o,$(ASM))
+
+TESTS=$(wildcard tests/[0-9]*.c)
+BIN=$(patsubst tests/%.c,out/%.bin,$(TESTS))
 MEMMAP=memmap.ld
 
 RV=riscv64-unknown-elf
@@ -9,32 +13,41 @@ LD=$(RV)-ld
 OBJCOPY=$(RV)-objcopy
 OBJDUMP=$(RV)-objdump
 
-CFLAGS += -ffreestanding -nostdlib -nostartfiles -Wall -Werror -Wno-unused-function -march=rv32imafc -mabi=ilp32f -MMD
-ASFLAGS += -ffreestanding -nostdlib -nostartfiles -Wall -Werror -Wno-unused-function -march=rv32imafc -mabi=ilp32f -MMD
+CFLAGS += -ffreestanding -nostdlib -nostartfiles -Wall -Werror -Wno-unused-function -march=rv32imafc -mabi=ilp32f -Iinc
+ASFLAGS += -ffreestanding -nostdlib -nostartfiles -Wall -Werror -Wno-unused-function -march=rv32imafc -mabi=ilp32f -Iinc
 LDFLAGS += -march=rv32imafc -mabi=ilp32f -nostdlib -nostartfiles
 
 .PHONY: all
-all: $(TESTS:.c=.bin)
+all: $(BIN)
 
 .PHONY: clean
 clean:
-	rm -f *.bin *.list *.o *.elf *.d
+	rm -rf obj out **/*.d
 
 ifneq ($(MAKECMDGOALS),clean)
-include $(wildcard *.d)
+include $(wildcard **/*.d)
 endif
 
-%.o: %.c
-	$(CC) $< $(CFLAGS) -c -o $@
+obj/%.o: src/%.c
+	mkdir -p obj
+	$(CC) $< $(CFLAGS) -c -o $@ -MMD -MF $(@:.o=.d)
 
-%.o: %.S
-	$(CC) $< $(ASFLAGS) -c -o $@
+obj/%.o: tests/%.c
+	mkdir -p obj
+	$(CC) $< $(CFLAGS) -c -o $@ -MMD -MF $(@:.o=.d)
 
-%.elf: %.o $(SHARED) $(MEMMAP)
+obj/%.o: src/%.S
+	mkdir -p obj
+	$(CC) $< $(ASFLAGS) -c -o $@ -MMD -MF $(@:.o=.d)
+
+obj/%.elf: obj/%.o $(SHARED) $(MEMMAP)
+	mkdir -p obj
 	$(CC) $(LDFLAGS) -T$(MEMMAP) $(SHARED) $< -o $@
 
-%.bin %.list: %.elf
+out/%.bin out/%.list: obj/%.elf
+	mkdir -p out
 	$(OBJCOPY) $< -Obinary $@
 	$(OBJDUMP) $< -D > $(@:.bin=.list)
 
-.PRECIOUS: %.o %.elf %.list
+.PRECIOUS: obj/%.o obj/%.elf out/%.list
+.SUFFIXES:
