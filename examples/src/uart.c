@@ -19,16 +19,6 @@ void uart_putc(char c) {
   PUT32(UART0_BASE + UART_FIFO_WDATA, c);
 }
 
-void uart_puthex(uint32_t x) {
-  const char *data = "0123456789abcdef";
-  uart_putc('0');
-  uart_putc('x');
-  for (int i = 7; i >= 0; i--) {
-    uart_putc(data[(x >> (i * 4)) & 0xf]);
-  }
-  uart_putc('\n');
-}
-
 void uart_puts(const char *c) {
   while (*c) {
     uart_putc(*c++);

@@ -4,6 +4,5 @@
 
 bool uart_can_putc(void);
 void uart_putc(char c);
-void uart_puthex(uint32_t x);
 void uart_puts(const char *c);
 void uart_init(unsigned baud);
