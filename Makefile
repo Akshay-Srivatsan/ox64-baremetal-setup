@@ -1,6 +1,6 @@
 SRC=$(wildcard *.c)
 
-CFLAGS += -Werror -Wall -Wno-packed-bitfield-compat -lz -lssl -lcrypto
+CFLAGS += -Werror -Wall -Wno-packed-bitfield-compat -lz -lssl -lcrypto -MMD
 
 .PHONY: all
 all: ox-flash examples
@@ -22,5 +22,4 @@ boot-header.h: dump-struct.py $(wildcard *.py)
 	./$< > $@
 
 ox-flash: ox-flash.c boot-header.h
-	$(CC) $(CFLAGS) $< -o $@
-	$(CC) -MMD $(CFLAGS) $< -o $@
+	$(CC) $< $(CFLAGS) -o $@
