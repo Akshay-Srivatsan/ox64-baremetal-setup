@@ -1,4 +1,4 @@
-SHARED=start.o cstart.o
+SHARED=start.o cstart.o uart.o
 TESTS=$(wildcard [0-9]*.c)
 MEMMAP=memmap.ld
 
