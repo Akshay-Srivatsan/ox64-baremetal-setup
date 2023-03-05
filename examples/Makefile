@@ -1,4 +1,4 @@
-START=start.o cstart.o
+SHARED=start.o cstart.o
 TESTS=$(wildcard [0-9]*.c)
 MEMMAP=memmap.ld
 
@@ -9,11 +9,11 @@ LD=$(RV)-ld
 OBJCOPY=$(RV)-objcopy
 OBJDUMP=$(RV)-objdump
 
-CFLAGS += -ffreestanding -nostdlib -nostartfiles -Wall -Werror -Wno-unused-function -march=rv32imafc -mabi=ilp32f
-ASFLAGS += -ffreestanding -nostdlib -nostartfiles -Wall -Werror -Wno-unused-function -march=rv32imafc -mabi=ilp32f
+CFLAGS += -ffreestanding -nostdlib -nostartfiles -Wall -Werror -Wno-unused-function -march=rv32imafc -mabi=ilp32f -MMD
+ASFLAGS += -ffreestanding -nostdlib -nostartfiles -Wall -Werror -Wno-unused-function -march=rv32imafc -mabi=ilp32f -MMD
 LDFLAGS += -march=rv32imafc -mabi=ilp32f -nostdlib -nostartfiles
 
-.PHONY: akk
+.PHONY: all
 all: $(TESTS:.c=.bin)
 
 .PHONY: clean
@@ -21,19 +21,17 @@ clean:
 	rm -f *.bin *.list *.o *.elf *.d
 
 ifneq ($(MAKECMDGOALS),clean)
-	include $(wildcard *.d)
+include $(wildcard *.d)
 endif
 
-%.o %.d: %.c
-	$(CC) $(CFLAGS) $< -c -o $@
-	$(CC) $(CFLAGS) -MMD $< -c -o $@
+%.o: %.c
+	$(CC) $< $(CFLAGS) -c -o $@
 
-%.o %.d: %.S
-	$(CC) $(ASFLAGS) $< -c -o $@
-	$(CC) $(ASFLAGS) -MMD $< -c -o $@
+%.o: %.S
+	$(CC) $< $(ASFLAGS) -c -o $@
 
-%.elf: %.o $(START) $(MEMMAP)
-	$(CC) $(LDFLAGS) -T$(MEMMAP) $(START) $< -o $@
+%.elf: %.o $(SHARED) $(MEMMAP)
+	$(CC) $(LDFLAGS) -T$(MEMMAP) $(SHARED) $< -o $@
 
 %.bin %.list: %.elf
 	$(OBJCOPY) $< -Obinary $@
