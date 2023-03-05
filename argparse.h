@@ -17,7 +17,7 @@ static struct argp_option options[] = {
     {"baud", 'b', "BAUD", 0, "The baud rate to use."},
     {"addr", 'a', "ADDRESS", 0,
      "The RAM address to load at (default 0x22020000)."},
-    {"linger", 'l', 0, 0,
+    {"linger", 'l', 0, OPTION_ARG_OPTIONAL,
      "Keep the serial port open and print any bytes received."},
     {0},
 };
